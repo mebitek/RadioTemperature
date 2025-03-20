@@ -100,7 +100,7 @@ def main():
 
     logging.info(">>>>>>>>>>>>>>>> Radio Temperature Starting <<<<<<<<<<<<<<<<")
 
-    rtl_process = subprocess.Popen(['bin/rtl_433', '-c', "bin/rtl.conf"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    rtl_process = subprocess.Popen(['/data/RadioTemperature/bin/rtl_433', '-c', "/data/RadioTemperature/bin/rtl.conf"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
     thread.daemon = True
 
