@@ -133,6 +133,7 @@ def main():
                 '/Temperature': {'initial': 0},
                 '/Humidity': {'initial': 0},
                 '/TemperatureType': {'initial': device.device_type},
+                '/CustomName': {'initial': device.normalize_name()},
                 '/UpdateIndex': {'initial': 0},
             },
             config=config,
