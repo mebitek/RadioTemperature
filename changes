@@ -1,2 +1,4 @@
+v1.0.0:
+    add online weather fetcher (wunderground and openweather)
 v0.0.1:
     initial release
