@@ -134,6 +134,7 @@ class RadioTemperatureService:
                     temp = temp + instance.temperature.temperature
                     humidity = humidity + instance.temperature.humidity
                     i = i + 1
+                    logging.debug("NUM of outside instances %d" % i)
 
             for key in instances:
                 instance = instances[key]
@@ -147,6 +148,17 @@ class RadioTemperatureService:
         return True
 
     def _handlechangedvalue(self, path, value):
+        global instances
+        logging.debug("* * * change from outside %s to %s" % (path, value))
+
+        for key in instances:
+            instance = instances[key]
+            if instance.dbusservice.name == self.dbusservice.name:
+                logging.debug("* * * INSTANCE CHANGED %s - %s" % (key, self.dbusservice.name))
+                instance.temperature.device_type = value
+                instances[key] = self
+                break
+
         return True
 
 
