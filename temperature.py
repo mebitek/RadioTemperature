@@ -12,13 +12,15 @@ class TemperatureType(Enum):
     FREEZER=6
 
 class Temperature:
-    def __init__(self, name, model, channel, topic, temperature_json_field, device_type, temperature, humidity ):
+    def __init__(self, name, model, channel, topic, temperature_json_field, device_type, is_online, temperature, humidity ):
         self.name = name
         self.model = model
         self.channel = channel
         self.topic = topic
         self.temperature_json_field = temperature_json_field
         self.device_type = device_type
+        self.is_online = is_online
+        self.last_update = None
 
         self.temperature = temperature
         self.humidity = humidity

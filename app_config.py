@@ -22,6 +22,9 @@ class AppConfig:
         else:
             return False
 
+    def get_gps(self):
+        return self.config.get("Setup", "gps", fallback="com.victronenergy.gps.ve_ttyACM0")
+
     def get_mqtt_address(self):
         address = self.config.get('MQTTBroker', 'address', fallback=None)
         if address is None:
@@ -40,11 +43,29 @@ class AppConfig:
     def get_mqtt_name(self):
         return self.config.get('MQTTBroker', 'name', fallback='MQTT_to_Inverter')
 
+    def get_online(self):
+        return self.config.get('Online', 'addDevice', fallback=False)
+
+    def get_provider(self):
+        return self.config.get('Online', 'provider', fallback="wunderground")
+
+    def get_api_key(self):
+        return self.config.get('Online', 'apiKey', fallback=False)
+
+    def get_interval(self):
+        return int(self.config.get('Online', 'interval', fallback=10))
+
+    def get_units(self):
+        units = self.config.get('Online', 'units', fallback="metric")
+        if units is not "metric" or units is not "imperial":
+            units = "metric"
+        return units
+
     def get_devices(self):
         devices = []
         for key in self.config['Devices']:
             device_info = self.config['Devices'][key].split(',')
-            devices.append(Temperature(key, device_info[0], device_info[1], device_info[2], device_info[3], device_info[4], 0, 0 ))
+            devices.append(Temperature(key, device_info[0], device_info[1], device_info[2], device_info[3], device_info[4], False,0, 0 ))
         return devices
 
 
