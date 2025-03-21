@@ -20,6 +20,7 @@ class Temperature:
         self.temperature_json_field = temperature_json_field
         self.device_type = device_type
         self.is_online = is_online
+        self.is_aggregate = False
         self.last_update = None
 
         self.temperature = temperature

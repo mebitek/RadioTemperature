@@ -127,19 +127,19 @@ class RadioTemperatureService:
         if self.config.get_aggregate():
             temp = 0
             humidity = 0
-            i = 1
+            i = 0
             for key in instances:
                 instance = instances[key]
-                if instance.temperature.device_type == 4 and instance.temperature:
+                if instance.temperature.device_type == 4 and instance.temperature and not instance.temperature.is_aggregate:
                     temp = temp + instance.temperature.temperature
                     humidity = humidity + instance.temperature.humidity
                     i = i + 1
 
             for key in instances:
                 instance = instances[key]
-                if instance.temperature.is_online:
-                    instance.temperature.temperature = temp
-                    instance.temperature.humidity = humidity
+                if instance.temperature.is_aggregate:
+                    instance.temperature.temperature = temp / i
+                    instance.temperature.humidity = humidity / i
                     instance.dbusservice['/Temperature'] = instance.temperature.temperature
                     instance.dbusservice['/Humidity'] = instance.temperature.humidity
                     break
@@ -172,17 +172,26 @@ def main():
 
     devices = config.get_devices()
     online = config.get_online()
+    aggregate = config.get_aggregate()
+
+    if aggregate and not online:
+        aggregate = False
 
     if online:
         provider = config.get_provider()
         device = Temperature("online", provider, 1, None, None, TemperatureType.OUTDOOR.value, True, 0, 0)
         devices.insert(0, device)
 
+    if aggregate:
+        device = Temperature("Outdoor", "aggregate", 1, None, None, TemperatureType.OUTDOOR.value, False, 0, 0)
+        device.is_aggregate = True
+        devices.insert(1, device)
+
     broker = Broker(config.get_mqtt_name(), config.get_mqtt_address(), config.get_mqtt_port())
     broker.on_message(on_message)
 
     for device in devices:
-        if not device.is_online:
+        if not device.is_online and not device.is_aggregate:
             topic_category[device.topic] = device.model
 
     broker.topic_category = topic_category
@@ -197,10 +206,6 @@ def main():
 
 
         service_name = 'com.victronenergy.temperature.%s' % device.normalize_name()
-        if device.device_type == 4 and device.is_online == False and config.get_aggregate():
-            logging.debug("****************** FOUND DEVICE 4 not online")
-            service_name = "com.victronenergy.temperature_disabled.%s" % device.normalize_name()
-
         vac_output = RadioTemperatureService(
             servicename=service_name,
             deviceinstance=40 + i,
