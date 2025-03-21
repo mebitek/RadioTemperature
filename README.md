@@ -17,6 +17,7 @@ The Python script subscribes to a MQTT Broker and parses temperature and humidit
     - In `MQTTBroker` configure your MQQT broker, default is the Venus OS MQTT broker (127.0.0.1)
     - In `[Devices]` section you can specify all your radio devices
       - device_name = model,channel,topic,temparature json field, type
+  confiure `bin/rtl.conf` for your needs - [RTL 433](https://github.com/merbanan/rtl_433)
 
 ### Installation
 
