@@ -1,8 +1,12 @@
 from abc import ABC, abstractmethod
 from datetime import datetime
+from enum import Enum
 
 import requests
 
+class ProviderType(Enum):
+    WUNDERGROUD="wunderground"
+    OPENWEATHER="openweather"
 
 class WeatherProvider(ABC):
     def __init__(self, api_key, units):

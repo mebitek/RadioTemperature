@@ -5,7 +5,6 @@ import logging
 import os
 import random
 import sys
-import threading
 from datetime import datetime, timedelta
 
 import dbus
@@ -13,12 +12,11 @@ import dbus
 import subprocess
 import _thread as thread
 
-import requests
 from dbus import SessionBus, SystemBus, DBusException
 
 from app_config import AppConfig
 from mqtt_broker import Broker
-from provider import WundergroundProvider, OpenweatherProvider
+from provider import WundergroundProvider, OpenweatherProvider, ProviderType
 from temperature import Temperature, TemperatureType
 
 # add the path to our own packages for import
@@ -111,9 +109,9 @@ class RadioTemperatureService:
             if self.temperature.last_update is None or datetime.now() > self.temperature.last_update + timedelta(
                     minutes=self.config.get_interval()):
 
-                if self.config.get_provider() == "wunderground":
+                if self.config.get_provider() == ProviderType.WUNDERGROUD.value:
                     provider = WundergroundProvider(self.config.get_api_key(), self.config.get_units())
-                elif self.config.get_provider() == 'openweather':
+                elif self.config.get_provider() == ProviderType.OPENWEATHER.value:
                     provider = OpenweatherProvider(self.config.get_api_key(), self.config.get_units())
                 else:
                     logging.debug("not valid provider.")
@@ -152,7 +150,7 @@ def main():
 
     logging.info(">>>>>>>>>>>>>>>> Radio Temperature Starting <<<<<<<<<<<<<<<<")
 
-    rtl_process = subprocess.Popen(['/data/RadioTemperature/bin/rtl_433', '-c', "/data/RadioTemperature/bin/rtl.conf"],
+    subprocess.Popen(['/data/RadioTemperature/bin/rtl_433', '-c', "/data/RadioTemperature/bin/rtl.conf"],
                                    stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
     thread.daemon = True
