@@ -1,3 +1,5 @@
+v1.0.1:
+    add feature to aggregate outdoor devices with online outoodr device
 v1.0.0:
     add online weather fetcher (wunderground and openweather)
 v0.0.1:
