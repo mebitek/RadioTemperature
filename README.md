@@ -1,4 +1,4 @@
-# venus.RadioTemperature v1.0.0
+# venus.RadioTemperature v1.0.1
 Service to integrate a list of radio temperature sensors using rtl_433 binary. it can also fetch weather conditions from wunderground and openweather providers.
 
 
@@ -14,7 +14,7 @@ The script can create a special device fetching weather data from online provide
 
 * #### Manual
   See config.sample.ini and amend for your own needs. Copy to `/data/conf` as `radio_temperature.config.ini`
-    - In `[Setup]` set `debug` to enable debug level on logs, `gps` is your gps device to get your current position
+    - In `[Setup]` set `debug` to enable debug level on logs, `gps` is your gps device to get your current position, `æggregate` = true will aggreagate data for outddor sensors with the online device
     - In `MQTTBroker` configure your MQQT broker, default is the Venus OS MQTT broker (127.0.0.1)
     - In `Online` configure the online weather provider to fetch weather information of your current position (you need an api key from the provider)
     - In `[Devices]` section you can specify all your radio devices
