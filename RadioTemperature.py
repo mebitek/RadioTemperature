@@ -48,29 +48,33 @@ class RadioTemperatureService:
 
         # dbus service
         logging.debug("* * * %s" % servicename)
-        self._dbusservice = VeDbusService(servicename, bus=dbus_connection(), register=False)
+        self.dbusservice = VeDbusService(servicename, bus=dbus_connection(), register=False)
         self._paths = paths
 
-        self._dbusservice.add_path('/Mgmt/ProcessName', __file__)
-        self._dbusservice.add_path('/Mgmt/ProcessVersion', self.config.get_version())
-        self._dbusservice.add_path('/Mgmt/Connection', connection)
+        self.dbusservice.add_path('/Mgmt/ProcessName', __file__)
+        self.dbusservice.add_path('/Mgmt/ProcessVersion', self.config.get_version())
+        self.dbusservice.add_path('/Mgmt/Connection', connection)
 
         # Create the mandatory objects
-        self._dbusservice.add_path('/DeviceInstance', deviceinstance)
+        self.dbusservice.add_path('/DeviceInstance', deviceinstance)
         # value used in ac_sensor_bridge.cpp of dbus-cgwacs
-        self._dbusservice.add_path('/ProductId', random.randint(1, 9))
-        self._dbusservice.add_path('/ProductName', self.temperature.name)
-        self._dbusservice.add_path('/DeviceName', self.temperature.name)
-        self._dbusservice.add_path('/FirmwareVersion', 0x0136)
-        self._dbusservice.add_path('/HardwareVersion', 8)
-        self._dbusservice.add_path('/Connected', 1)
-        self._dbusservice.add_path('/Serial', "xxxx")
+        self.dbusservice.add_path('/ProductId', random.randint(1, 9))
+        self.dbusservice.add_path('/ProductName', self.temperature.name)
+        self.dbusservice.add_path('/DeviceName', self.temperature.name)
+        self.dbusservice.add_path('/FirmwareVersion', 0x0136)
+        self.dbusservice.add_path('/HardwareVersion', 8)
+        #### TODO aggregate
+        if self.temperature.device_type == 4 and not self.temperature.is_online:
+            self.dbusservice.add_path('/Connected', 0)
+        else:
+            self.dbusservice.add_path('/Connected', 1)
+        self.dbusservice.add_path('/Serial', "xxxx")
 
         for path, settings in self._paths.items():
-            self._dbusservice.add_path(
+            self.dbusservice.add_path(
                 path, settings['initial'], writeable=True, onchangecallback=self._handlechangedvalue)
 
-        self._dbusservice.register()
+        self.dbusservice.register()
         GLib.timeout_add(1000, self._update)
 
     def _update(self):
@@ -106,17 +110,40 @@ class RadioTemperatureService:
                 if conditions.get("valid"):
                     city = conditions.get("city")
                     self.temperature.name = city
-                    self._dbusservice['/CustomName'] = city
+                    self.dbusservice['/CustomName'] = city
+
                     self.temperature.temperature = conditions.get("temperature")
                     self.temperature.humidity = conditions.get("humidity")
                     self.temperature.last_update = conditions.get("last_update")
                 else:
                     return True
             else:
-                logging.debug("interval not reached, not updating")
+                logging.debug("* * * Online Device: interval not reached, not updating")
 
-        self._dbusservice['/Temperature'] = self.temperature.temperature
-        self._dbusservice['/Humidity'] = self.temperature.humidity
+        self.dbusservice['/Temperature'] = self.temperature.temperature
+        self.dbusservice['/Humidity'] = self.temperature.humidity
+
+
+        if self.config.get_aggregate():
+            temp = 0
+            humidity = 0
+            i = 1
+            for key in instances:
+                instance = instances[key]
+                if instance.temperature.device_type == 4 and instance.temperature:
+                    temp = temp + instance.temperature.temperature
+                    humidity = humidity + instance.temperature.humidity
+                    i = i + 1
+
+            for key in instances:
+                instance = instances[key]
+                if instance.temperature.is_online:
+                    instance.temperature.temperature = temp
+                    instance.temperature.humidity = humidity
+                    instance.dbusservice['/Temperature'] = instance.temperature.temperature
+                    instance.dbusservice['/Humidity'] = instance.temperature.humidity
+                    break
+
         return True
 
     def _handlechangedvalue(self, path, value):
@@ -135,7 +162,7 @@ def main():
     logging.info(">>>>>>>>>>>>>>>> Radio Temperature Starting <<<<<<<<<<<<<<<<")
 
     subprocess.Popen(['/data/RadioTemperature/bin/rtl_433', '-c', "/data/RadioTemperature/bin/rtl.conf"],
-                                   stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+                     stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
     thread.daemon = True
 
@@ -165,9 +192,17 @@ def main():
     i = 0
     for device in devices:
         logging.debug("***** %s " % 'com.victronenergy.temperature.%s' % device.normalize_name())
+        logging.debug("***** %d " % device.device_type)
+        logging.debug("***** %s " % device.is_online)
+
+
+        service_name = 'com.victronenergy.temperature.%s' % device.normalize_name()
+        if device.device_type == 4 and device.is_online == False and config.get_aggregate():
+            logging.debug("****************** FOUND DEVICE 4 not online")
+            service_name = "com.victronenergy.temperature_disabled.%s" % device.normalize_name()
 
         vac_output = RadioTemperatureService(
-            servicename='com.victronenergy.temperature.%s' % device.normalize_name(),
+            servicename=service_name,
             deviceinstance=40 + i,
             paths={
                 '/Temperature': {'initial': 0},
