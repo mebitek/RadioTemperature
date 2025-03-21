@@ -73,22 +73,6 @@ class RadioTemperatureService:
         self._dbusservice.register()
         GLib.timeout_add(1000, self._update)
 
-    def on_message(self, client, userdata, msg):
-        try:
-            logging.debug('* * * Incoming message from: ' + msg.topic)
-
-            # write the values into dict
-            if msg.topic in self.topic_category:
-                jsonpayload = json.loads(msg.payload)
-                self.temperature.temperature = jsonpayload[self.temperature.temperature_json_field]
-                self.temperature.humidity = jsonpayload['humidity']
-            else:
-                logging.debug("Topic not in configurd topics. This shouldn't be happen")
-
-        except Exception as e:
-            logging.exception("Error in handling of received message payload: " + msg.payload)
-            logging.exception(e)
-
     def _update(self):
         logging.debug("* * * Updating device info")
 
