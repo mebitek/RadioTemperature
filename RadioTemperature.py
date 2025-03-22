@@ -63,11 +63,7 @@ class RadioTemperatureService:
         self.dbusservice.add_path('/DeviceName', self.temperature.name)
         self.dbusservice.add_path('/FirmwareVersion', 0x0136)
         self.dbusservice.add_path('/HardwareVersion', 8)
-        #### TODO aggregate
-        if self.temperature.device_type == 4 and not self.temperature.is_online:
-            self.dbusservice.add_path('/Connected', 0)
-        else:
-            self.dbusservice.add_path('/Connected', 1)
+        self.dbusservice.add_path('/Connected', 1)
         self.dbusservice.add_path('/Serial', "xxxx")
 
         for path, settings in self._paths.items():
@@ -130,11 +126,12 @@ class RadioTemperatureService:
             i = 0
             for key in instances:
                 instance = instances[key]
-                if instance.temperature.device_type == 4 and instance.temperature and not instance.temperature.is_aggregate:
+                logging.debug("* * * Instance %s type %d" % (instance.dbusservice.name, instance.temperature.device_type))
+                if instance.temperature.device_type == 4 and not instance.temperature.is_aggregate:
                     temp = temp + instance.temperature.temperature
                     humidity = humidity + instance.temperature.humidity
                     i = i + 1
-                    logging.debug("NUM of outside instances %d" % i)
+                    logging.debug("* * * vNUM of outside instances %d" % i)
 
             for key in instances:
                 instance = instances[key]
@@ -192,12 +189,12 @@ def main():
     if online:
         provider = config.get_provider()
         device = Temperature("online", provider, 1, None, None, TemperatureType.OUTDOOR.value, True, 0, 0)
-        devices.insert(0, device)
+        devices.append(device)
 
     if aggregate:
         device = Temperature("Outdoor", "aggregate", 1, None, None, TemperatureType.OUTDOOR.value, False, 0, 0)
         device.is_aggregate = True
-        devices.insert(1, device)
+        devices.append(device)
 
     broker = Broker(config.get_mqtt_name(), config.get_mqtt_address(), config.get_mqtt_port())
     broker.on_message(on_message)

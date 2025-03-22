@@ -75,6 +75,7 @@ class AppConfig:
     def get_devices(self):
         devices = []
         for key in self.config['Devices']:
+            logging.debug("* * * get_devices: %s " % key)
             device_info = self.config['Devices'][key].split(',')
             devices.append(Temperature(key, device_info[0], device_info[1], device_info[2], device_info[3], int(device_info[4]), False,0, 0 ))
         return devices
