@@ -124,23 +124,21 @@ class RadioTemperatureService:
             temp = 0
             humidity = 0
             i = 0
-            for key in instances:
-                instance = instances[key]
+            for key, instance in instances.items():
                 logging.debug("* * * Instance %s type %d" % (instance.dbusservice.name, instance.temperature.device_type))
                 if instance.temperature.device_type == 4 and not instance.temperature.is_aggregate:
                     temp = temp + instance.temperature.temperature
                     humidity = humidity + instance.temperature.humidity
-                    i = i + 1
-                    logging.debug("* * * vNUM of outside instances %d" % i)
+                    i += 1
+                    logging.debug("* * * Total of outside instances %d" % i)
 
-            for key in instances:
-                instance = instances[key]
-                if instance.temperature.is_aggregate:
-                    instance.temperature.temperature = temp / i
-                    instance.temperature.humidity = humidity / i
-                    instance.dbusservice['/Temperature'] = instance.temperature.temperature
-                    instance.dbusservice['/Humidity'] = instance.temperature.humidity
-                    break
+
+            aggregate_instance = instances['aggregate_1']
+            aggregate_instance.temperature.temperature = temp / i
+            aggregate_instance.temperature.humidity = humidity / i
+            aggregate_instance.dbusservice['/Temperature'] = aggregate_instance.temperature.temperature
+            aggregate_instance.dbusservice['/Humidity'] = aggregate_instance.temperature.humidity
+
         index = self.dbusservice['/UpdateIndex'] + 1  # increment index
         if index > 255:  # maximum value of the index
             index = 0  # overflow from 255 to 0
