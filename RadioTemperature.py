@@ -141,7 +141,10 @@ class RadioTemperatureService:
                     instance.dbusservice['/Temperature'] = instance.temperature.temperature
                     instance.dbusservice['/Humidity'] = instance.temperature.humidity
                     break
-
+        index = self.dbusservice['/UpdateIndex'] + 1  # increment index
+        if index > 255:  # maximum value of the index
+            index = 0  # overflow from 255 to 0
+        self.dbusservice['/UpdateIndex'] = index
         return True
 
     def _handlechangedvalue(self, path, value):
