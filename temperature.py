@@ -25,6 +25,7 @@ class Temperature:
 
         self.temperature = temperature
         self.humidity = humidity
+        self.pressure = None
 
     def normalize_name(self):
         return re.sub(r'[^a-zA-Z0-9]', '_', self.name)

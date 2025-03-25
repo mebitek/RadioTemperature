@@ -222,6 +222,8 @@ def main():
             paths={
                 '/Temperature': {'initial': 0},
                 '/Humidity': {'initial': 0},
+                '/Pressure': {'initial': None},
+                '/Status': {'initial': 0},
                 '/TemperatureType': {'initial': device.device_type},
                 '/CustomName': {'initial': device.normalize_name()},
                 '/UpdateIndex': {'initial': 0},
@@ -248,6 +250,8 @@ def on_message(client, userdata, msg):
 
             device.temperature = jsonpayload[device.temperature_json_field]
             device.humidity = jsonpayload['humidity']
+            if 'pressure_hPa' in jsonpayload:
+                device.pressure = jsonpayload['pressure_hPa']
         else:
             logging.debug("Topic not in configurd topics. This shouldn't be happen")
 
