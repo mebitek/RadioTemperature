@@ -48,6 +48,9 @@ class WundergroundProvider(WeatherProvider):
                     self.conditions['humidity'] = data["observations"][0]["humidity"]
                     self.conditions['last_update'] = datetime.now()
                     self.conditions['valid'] = True
+            else:
+                logging.debug("Failed to get weather data: status code is %s" % response.status_code)
+                self.conditions['valid'] = False
         except Exception:
             logging.exception("Failed to get weather data")
             self.conditions['valid'] = False
@@ -71,6 +74,10 @@ class OpenweatherProvider(WeatherProvider):
                 self.conditions['humidity'] = data["main"]["humidity"]
                 self.conditions['last_update'] = datetime.now()
                 self.conditions['valid'] = True
+            else:
+                logging.debug("Failed to get weather data: status code is %s" % response.status_code)
+                self.conditions['valid'] = False
+                self.conditions['valid'] = False
         except Exception:
             logging.exception("Failed to get weather data")
             self.conditions['valid'] = False
