@@ -1,4 +1,4 @@
-# venus.RadioTemperature v1.0.2
+# venus.RadioTemperature v1.0.3
 Service to integrate a list of radio temperature sensors using rtl_433 binary. it can also fetch weather conditions from wunderground and openweather providers.
 
 

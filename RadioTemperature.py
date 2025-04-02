@@ -82,12 +82,13 @@ class RadioTemperatureService:
                 gps = self.config.get_gps()
                 latitude = VeDbusItemImport(self.dbus_conn, gps, '/Position/Latitude')
                 longitude = VeDbusItemImport(self.dbus_conn, gps, '/Position/Longitude')
+                logging.debug("* * * latitude: %s, longitude: %s" % (latitude, longitude))
             except DBusException as e:
-                logging.debug("GPS not connected")
+                logging.debug("* * * GPS not connected")
                 return True
 
             if latitude.get_value() is None or longitude.get_value() is None:
-                logging.debug("GPS not fixed")
+                logging.debug("* * * GPS not fixed")
                 return True
 
             if self.temperature.last_update is None or datetime.now() > self.temperature.last_update + timedelta(
@@ -98,7 +99,7 @@ class RadioTemperatureService:
                 elif self.config.get_provider() == ProviderType.OPENWEATHER.value:
                     provider = OpenweatherProvider(self.config.get_api_key(), self.config.get_units())
                 else:
-                    logging.debug("not valid provider.")
+                    logging.debug("* * * not valid provider.")
                     return True
 
                 provider.get_weather(latitude.get_value(), longitude.get_value())
@@ -112,6 +113,7 @@ class RadioTemperatureService:
                     self.temperature.humidity = conditions.get("humidity")
                     self.temperature.last_update = conditions.get("last_update")
                 else:
+                    logging.debug("* * * not valid weather.")
                     return True
             else:
                 logging.debug("* * * Online Device: interval not reached, not updating")
