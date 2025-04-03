@@ -4,6 +4,7 @@ import json
 import logging
 import os
 import random
+import shutil
 import sys
 from datetime import datetime, timedelta
 
@@ -173,7 +174,12 @@ def main():
 
     logging.info(">>>>>>>>>>>>>>>> Radio Temperature Starting <<<<<<<<<<<<<<<<")
 
-    subprocess.Popen(['/data/RadioTemperature/bin/rtl_433', '-c', "/data/RadioTemperature/bin/rtl.conf"],
+    config_file = "%s/../conf/rtl.conf" % (os.path.dirname(os.path.realpath(__file__)))
+    if not os.path.exists(config_file):
+        sample_config_file = "%s/bin/rtl.conf" % (os.path.dirname(os.path.realpath(__file__)))
+        shutil.copy(sample_config_file, config_file)
+
+    subprocess.Popen(['/data/RadioTemperature/bin/rtl_433', '-c', "/data/conf/rtl.conf"],
                      stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
     thread.daemon = True
