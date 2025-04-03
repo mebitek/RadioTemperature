@@ -82,7 +82,7 @@ class RadioTemperatureService:
                 gps = self.config.get_gps()
                 latitude = VeDbusItemImport(self.dbus_conn, gps, '/Position/Latitude')
                 longitude = VeDbusItemImport(self.dbus_conn, gps, '/Position/Longitude')
-                logging.debug("* * * latitude: %s, longitude: %s" % (latitude, longitude))
+                logging.debug("* * * latitude: %s, longitude: %s" % (latitude.get_value(), longitude.get_value()))
             except DBusException as e:
                 logging.debug("* * * GPS not connected")
                 return True
