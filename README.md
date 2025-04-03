@@ -19,7 +19,7 @@ The script can create a special device fetching weather data from online provide
     - In `Online` configure the online weather provider to fetch weather information of your current position (you need an api key from the provider)
     - In `[Devices]` section you can specify all your radio devices
       - device_name = model,channel,topic,temparature json field, type
-  confiure `bin/rtl.conf` for your needs - [RTL 433](https://github.com/merbanan/rtl_433)
+  confiure `/data/conf/rtl.conf` for your needs - [RTL 433](https://github.com/merbanan/rtl_433)
 
 ### Installation
 
