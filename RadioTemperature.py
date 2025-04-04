@@ -77,6 +77,10 @@ class RadioTemperatureService:
     def _update(self):
         logging.debug("* * * Updating device info")
 
+        if not self.is_process_running():
+            subprocess.Popen(['/data/RadioTemperature/bin/rtl_433', '-c', "/data/conf/rtl.conf"],
+                             stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+
         if self.temperature.is_online:
 
             try:
@@ -161,6 +165,14 @@ class RadioTemperatureService:
                 break
 
         return True
+
+    @staticmethod
+    def is_process_running():
+        try:
+            tasklist_output = subprocess.check_output(['ps','x'], encoding='utf-8')
+            return "rtl_433" in tasklist_output
+        except subprocess.CalledProcessError:
+            return False
 
 
 def main():
