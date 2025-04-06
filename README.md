@@ -19,7 +19,9 @@ The script can create a special device fetching weather data from online provide
     - In `Online` configure the online weather provider to fetch weather information of your current position (you need an api key from the provider)
     - In `[Devices]` section you can specify all your radio devices
       - device_name = model,channel,topic,temparature json field, type
-  confiure `/data/conf/rtl.conf` for your needs - [RTL 433](https://github.com/merbanan/rtl_433)
+  
+  
+   **IMPORTANT**: configure `/data/conf/rtl.conf` for your needs - [RTL 433](https://github.com/merbanan/rtl_433)
 
 ### Installation
 
@@ -30,7 +32,7 @@ The script can create a special device fetching weather data from online provide
     4. on `new` enter the following:
         - `package name` -> `RadioTemperature`
         - `GitHub user` -> `mebitek`
-        - `GitHub branch or tag` -> `master`
+        - `GitHub branch or tag` -> `master` - for venus os 3.60 use `3.60` branch
     5. go to `Active packages` and click on `RadioTemperature`
         - click on `download` -> `proceed`
         - click on `install` -> `proceed`
