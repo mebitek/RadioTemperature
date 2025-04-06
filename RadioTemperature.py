@@ -169,7 +169,7 @@ class RadioTemperatureService:
     @staticmethod
     def is_process_running():
         try:
-            tasklist_output = subprocess.check_output(['ps','x'], encoding='utf-8')
+            tasklist_output = subprocess.check_output(['ps'], encoding='utf-8')
             return "rtl_433" in tasklist_output
         except subprocess.CalledProcessError:
             return False
