@@ -139,12 +139,12 @@ class RadioTemperatureService:
                     i += 1
                     logging.debug("* * * Total of outside instances %d" % i)
 
-
-            aggregate_instance = instances['aggregate_1']
-            aggregate_instance.temperature.temperature = temp / i
-            aggregate_instance.temperature.humidity = humidity / i
-            aggregate_instance.dbusservice['/Temperature'] = aggregate_instance.temperature.temperature
-            aggregate_instance.dbusservice['/Humidity'] = aggregate_instance.temperature.humidity
+            if 'aggregate_1' in instances:
+                aggregate_instance = instances['aggregate_1']
+                aggregate_instance.temperature.temperature = temp / i
+                aggregate_instance.temperature.humidity = humidity / i
+                aggregate_instance.dbusservice['/Temperature'] = aggregate_instance.temperature.temperature
+                aggregate_instance.dbusservice['/Humidity'] = aggregate_instance.temperature.humidity
 
         index = self.dbusservice['/UpdateIndex'] + 1  # increment index
         if index > 255:  # maximum value of the index
