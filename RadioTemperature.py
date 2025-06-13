@@ -36,7 +36,7 @@ instances = {}
 
 
 class RadioTemperatureService:
-    def __init__(self, servicename, deviceinstance, paths, productname='Temperature Radio Sensor', connection='MQTT',
+    def __init__(self, servicename, deviceinstance, paths, connection='MQTT',
                  config=None, device=None):
 
         self.config = config or AppConfig()
@@ -78,6 +78,7 @@ class RadioTemperatureService:
         logging.debug("* * * Updating device info")
 
         if not self.is_process_running():
+            logging.debug("* * * rtl is not running: starting again")
             subprocess.Popen(['/data/RadioTemperature/bin/rtl_433', '-c', "/data/conf/rtl.conf"],
                              stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
@@ -88,8 +89,8 @@ class RadioTemperatureService:
                 latitude = VeDbusItemImport(self.dbus_conn, gps, '/Position/Latitude')
                 longitude = VeDbusItemImport(self.dbus_conn, gps, '/Position/Longitude')
                 logging.debug("* * * latitude: %s, longitude: %s" % (latitude.get_value(), longitude.get_value()))
-            except DBusException as e:
-                logging.debug("* * * GPS not connected")
+            except DBusException:
+                logging.exception("* * * GPS not connected")
                 return True
 
             if latitude.get_value() is None or longitude.get_value() is None:
