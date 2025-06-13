@@ -32,7 +32,7 @@ The script can create a special device fetching weather data from online provide
     4. on `new` enter the following:
         - `package name` -> `RadioTemperature`
         - `GitHub user` -> `mebitek`
-        - `GitHub branch or tag` -> `master` - for venus os 3.60 use `3.60` branch
+        - `GitHub branch or tag` -> `master`
     5. go to `Active packages` and click on `RadioTemperature`
         - click on `download` -> `proceed`
         - click on `install` -> `proceed`
