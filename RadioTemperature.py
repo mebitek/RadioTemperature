@@ -235,6 +235,7 @@ def main():
 
     if rpi:
         device = Temperature("CPU", "cpu", 1, None, None, TemperatureType.GENERIC.value, False, 0, None)
+        devices.append(device)
 
     broker = Broker(config.get_mqtt_name(), config.get_mqtt_address(), config.get_mqtt_port())
     broker.on_message(on_message)
