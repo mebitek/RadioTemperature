@@ -33,7 +33,7 @@ class AppConfig:
             return False
 
     def get_cpu(self):
-        val = self.config.get("Setup", "cpu", fallback=True)
+        val = self.config.get("Setup", "cpu", fallback="true")
         if val == "true":
             return True
         else:
