@@ -1,3 +1,5 @@
+v1.0.6:
+    add cpu temperature
 v1.0.5:
     restart rtl_433 if it is not running on update sensor
 v1.0.4:

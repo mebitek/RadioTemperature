@@ -124,6 +124,20 @@ class RadioTemperatureService:
             else:
                 logging.debug("* * * Online Device: interval not reached, not updating")
 
+        if self.config.get_cpu():
+            if not os.path.exists('/sys/devices/virtual/thermal/thermal_zone0/temp'):
+                if dbus_cpu_service['/Connected'] != 0:
+                    logging.info("cpu temperature interface disconnected")
+                    dbus_cpu_service['/Connected'] = 0
+            else:
+                if dbus_cpu_service['/Connected'] != 1:
+                    logging.info("cpu temperature interface connected")
+                    dbus_cpu_service['/Connected'] = 1
+                fd  = open('/sys/devices/virtual/thermal/thermal_zone0/temp','r')
+                value = float(fd.read())
+                value = round(value / 1000.0, 1)
+                self.temperature.temperature = value
+
         self.dbusservice['/Temperature'] = self.temperature.temperature
         self.dbusservice['/Humidity'] = self.temperature.humidity
 
@@ -145,7 +159,7 @@ class RadioTemperatureService:
                 aggregate_instance.temperature.temperature = temp / i
                 aggregate_instance.temperature.humidity = humidity / i
                 aggregate_instance.dbusservice['/Temperature'] = aggregate_instance.temperature.temperature
-                aggregate_instance.dbusservice['/Humidity'] = aggregate_instance.temperature.humidity
+                aggregate_instance.dbusservice['/Humidity'] = aggregate_instance.temperature.humidity            
 
         index = self.dbusservice['/UpdateIndex'] + 1  # increment index
         if index > 255:  # maximum value of the index
@@ -204,6 +218,7 @@ def main():
     devices = config.get_devices()
     online = config.get_online()
     aggregate = config.get_aggregate()
+    cpu = config.get_cpu()
 
     if aggregate and not online:
         aggregate = False
@@ -217,6 +232,9 @@ def main():
         device = Temperature("Outdoor", "aggregate", 1, None, None, TemperatureType.OUTDOOR.value, False, 0, 0)
         device.is_aggregate = True
         devices.append(device)
+
+    if rpi:
+        device = Temperature("CPU", "cpu", 1, None, None, TemperatureType.GENERIC.value, False, 0, None)
 
     broker = Broker(config.get_mqtt_name(), config.get_mqtt_address(), config.get_mqtt_port())
     broker.on_message(on_message)
@@ -242,7 +260,7 @@ def main():
             deviceinstance=40 + i,
             paths={
                 '/Temperature': {'initial': 0},
-                '/Humidity': {'initial': 0},
+                '/Humidity': {'initial': None},
                 '/Pressure': {'initial': None},
                 '/Status': {'initial': 0},
                 '/TemperatureType': {'initial': device.device_type},

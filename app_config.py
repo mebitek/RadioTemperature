@@ -32,6 +32,13 @@ class AppConfig:
         else:
             return False
 
+    def get_cpu(self):
+        val = self.config.get("Setup", "rpi", fallback=True)
+        if val == "true":
+            return True
+        else:
+            return False
+
     def get_mqtt_address(self):
         address = self.config.get('MQTTBroker', 'address', fallback=None)
         if address is None:
