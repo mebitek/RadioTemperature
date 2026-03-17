@@ -126,13 +126,13 @@ class RadioTemperatureService:
 
         if self.config.get_cpu():
             if not os.path.exists('/sys/devices/virtual/thermal/thermal_zone0/temp'):
-                if dbus_cpu_service['/Connected'] != 0:
-                    logging.info("cpu temperature interface disconnected")
-                    dbus_cpu_service['/Connected'] = 0
+                if dbusservice['/Connected'] != 0:
+                   logging.info("cpu temperature interface disconnected")
+                   dbusservice['/Connected'] = 0
             else:
-                if dbus_cpu_service['/Connected'] != 1:
-                    logging.info("cpu temperature interface connected")
-                    dbus_cpu_service['/Connected'] = 1
+                if dbusservice['/Connected'] != 1:
+                   logging.info("cpu temperature interface connected")
+                   dbusservice['/Connected'] = 1
                 fd  = open('/sys/devices/virtual/thermal/thermal_zone0/temp','r')
                 value = float(fd.read())
                 value = round(value / 1000.0, 1)
