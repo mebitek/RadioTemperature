@@ -1,4 +1,4 @@
-# venus.RadioTemperature v1.0.5
+# venus.RadioTemperature v1.0.6
 Service to integrate a list of radio temperature sensors using rtl_433 binary. it can also fetch weather conditions from wunderground and openweather providers.
 
 
@@ -8,6 +8,7 @@ Service to integrate a list of radio temperature sensors using rtl_433 binary. i
 
 The Python script subscribes to a MQTT Broker and parses temperature and humidity data published by the RTL_433 script. These will send the values to dbus.
 The script can create a special device fetching weather data from online providers (wunderground and openweather)
+The script can read also from cpu thermal zone
 
 
 ### Configuration
