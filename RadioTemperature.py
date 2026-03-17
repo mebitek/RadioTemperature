@@ -233,7 +233,7 @@ def main():
         device.is_aggregate = True
         devices.append(device)
 
-    if rpi:
+    if cpu:
         device = Temperature("CPU", "cpu", 1, None, None, TemperatureType.GENERIC.value, False, 0, None)
         devices.append(device)
 
