@@ -233,10 +233,10 @@ def main():
         device.is_aggregate = True
         devices.append(device)
 
-    if cpu:
-        device = Temperature("CPU", "cpu", 1, None, None, TemperatureType.GENERIC.value, False, 0, None)
-        device.is_cpu = True
-        devices.append(device)
+    #if cpu:
+    device = Temperature("CPU", "cpu", 1, None, None, TemperatureType.GENERIC.value, False, 0, None)
+    device.is_cpu = True
+    devices.append(device)
 
     broker = Broker(config.get_mqtt_name(), config.get_mqtt_address(), config.get_mqtt_port())
     broker.on_message(on_message)
