@@ -22,6 +22,7 @@ class Temperature:
         self.is_online = is_online
         self.is_aggregate = False
         self.is_cpu = False
+        self.cpu_path = None
         self.last_update = None
 
         self.temperature = temperature

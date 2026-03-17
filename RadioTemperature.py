@@ -125,7 +125,7 @@ class RadioTemperatureService:
                 logging.debug("* * * Online Device: interval not reached, not updating")
 
         if self.temperature.is_cpu:
-            if not os.path.exists('/sys/devices/virtual/thermal/thermal_zone0/temp'):
+            if not os.path.exists(self.temperature.cpu_path):
                 if self.dbusservice['/Connected'] != 0:
                    logging.info("cpu temperature interface disconnected")
                    self.dbusservice['/Connected'] = 0
@@ -133,7 +133,7 @@ class RadioTemperatureService:
                 if self.dbusservice['/Connected'] != 1:
                    logging.info("cpu temperature interface connected")
                    self.dbusservice['/Connected'] = 1
-                fd  = open('/sys/devices/virtual/thermal/thermal_zone0/temp','r')
+                fd  = open(self.temperature.cpu_path,'r')
                 value = float(fd.read())
                 value = round(value / 1000.0, 1)
                 self.temperature.temperature = value
@@ -234,9 +234,21 @@ def main():
         devices.append(device)
 
     if cpu:
-        device = Temperature("CPU", "cpu", 1, None, None, TemperatureType.GENERIC.value, False, 0, None)
-        device.is_cpu = True
-        devices.append(device)
+
+        # cerbogx path
+        cpu_found = True
+        cpu_path = '/sys/class/thermal/thermal_zone0/temp'
+        if not os.path.exists(cpu_path):
+            # check rpi path
+            cpu_path = '/sys/devices/virtual/thermal/thermal_zone0/temp'
+            if not os.path.exists(cpu_path):
+                cpu_found = False
+
+        if cpu_found:
+            device = Temperature("CPU", "cpu", 1, None, None, TemperatureType.GENERIC.value, False, 0, None)
+            device.is_cpu = True
+            device.cpu_path = cpu_path
+            devices.append(device)
 
     broker = Broker(config.get_mqtt_name(), config.get_mqtt_address(), config.get_mqtt_port())
     broker.on_message(on_message)
