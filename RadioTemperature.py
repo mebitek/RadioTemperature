@@ -124,7 +124,7 @@ class RadioTemperatureService:
             else:
                 logging.debug("* * * Online Device: interval not reached, not updating")
 
-        if self.config.get_cpu():
+        if self.temperature.is_cpu:
             if not os.path.exists('/sys/devices/virtual/thermal/thermal_zone0/temp'):
                 if self.dbusservice['/Connected'] != 0:
                    logging.info("cpu temperature interface disconnected")
@@ -235,13 +235,14 @@ def main():
 
     if cpu:
         device = Temperature("CPU", "cpu", 1, None, None, TemperatureType.GENERIC.value, False, 0, None)
+        device.is_cpu = True
         devices.append(device)
 
     broker = Broker(config.get_mqtt_name(), config.get_mqtt_address(), config.get_mqtt_port())
     broker.on_message(on_message)
 
     for device in devices:
-        if not device.is_online and not device.is_aggregate:
+        if not device.is_online and not device.is_aggregate and not device.is_cpu:
             topic_category[device.topic] = device.model
 
     broker.topic_category = topic_category
