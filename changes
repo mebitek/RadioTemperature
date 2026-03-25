@@ -1,3 +1,5 @@
+v1.0.7:
+    update rtl_433 to v25.12
 v1.0.6:
     add cpu temperature
 v1.0.5:
